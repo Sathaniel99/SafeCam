@@ -1,0 +1,50 @@
+Activar el backend:
+cd Visor_WebCam\api\.env\Scripts
+activate
+cd ../..
+
+Activar el Frontend:
+uvicorn main:app --host 0.0.0.0 --port 5000 <-- para compartir el host
+uvicorn main:app --reload <-- para desarrollo
+cd Visor_WebCam/Frontend
+npm run dev
+
+ENDPOINTS QUE NECESITO:
+1 - PARA OBTENER LAS CAMARAS DE STREAM
+2 - PARA USAR UNA CAMARA QUE YA ESTA EN USO SIN MODIFICAR QUE OTRO LA ESTE USANDO , SOLO VER LO Q ELLA ESTA VIENDO
+3 - GRABAR VIDEO
+4 - GUARDAR CAPTURA DE PANTALLA
+5 - OBTENER VIDEO O CAPTURA DE PANTALLA
+6 - OBTENER TODOS LOS ARCHIVOS DE CAPTURA O GRABACION
+7 - PARA OBTENER TOTAL DE ARCHIVOS(IMAGENES Y VIDEOS), IMÁGENES, Y VIDEOS
+
+COSAS PARA HACER:
+- CREAR DOCUMENTACION
+
+RECOMENDACIONES:
+Gallery:
+    · Paginación o lazy loading:
+        - Si tienes muchos archivos, considera paginar o cargar por partes para mejorar el rendimiento.
+
+    · Manejo de errores más detallado:
+        - Puedes mostrar mensajes de error más específicos según el tipo de error recibido del backend.
+
+    · Animaciones: 
+        - Puedes añadir animaciones al eliminar o agregar archivos para una mejor UX.
+
+Monitor:
+    · Confirmación para detener grabación:
+        - Podrías pedir confirmación antes de detener una grabación accidentalmente.
+    
+    @(INDAGAR)
+    · Optimización de renders:
+        - Si la lista de cámaras es grande, considera usar React.memo para los componentes de cámara.
+
+    · Limpieza de recursos:
+        - Si abres streams o sockets en el futuro, asegúrate de cerrarlos en useEffect cleanup.
+
+    · Internacionalización:
+        - Si planeas soportar varios idiomas, centraliza los textos en un archivo de traducciones.
+
+    · Animaciones:
+        - Puedes añadir animaciones sutiles al seleccionar una cámara o al mostrar/ocultar la imagen.

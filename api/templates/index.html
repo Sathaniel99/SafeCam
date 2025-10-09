@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Visor de Webcam</title>
+        <link rel="stylesheet" href="../static/css/style.css">
+        <link rel="icon" type="image/png" href="../static/img/webcam.webp">
+        <link rel="icon" type="image/png" sizes="256x256" href="../static/img/webcam_256x256.webp">
+        <link rel="icon" type="image/png" sizes="128x128" href="../static/img/webcam_128x128.webp">
+        <link rel="icon" type="image/png" sizes="64x64" href="../static/img/webcam_64x64.webp">
+        <link rel="icon" type="image/png" sizes="32x32" href="../static/img/webcam_32x32.webp">
+        <link rel="icon" type="image/png" sizes="16x16" href="../static/img/webcam_16x16.webp">
+    </head>
+    <body>
+        <div class="video-container">
+            <img src="{{ url_for('video_feed') }}" id="video-feed">
+        </div>
+        <div class="container-all">
+            <div id="message"></div>
+            <div class="container-button">
+                <button class="btn" id="capture-btn">Guardar captura</button>
+                <button class="btn" id="record-btn">Grabar video</button>
+            </div>
+        </div>
+        <script>
+            const message = document.getElementById('message');
+            document.getElementById('capture-btn').addEventListener('click', async () => {
+                const response = await fetch('/screenshot', { method: 'POST' });
+                const result = await response.json();
+                message.style = "opacity: 1;";
+                if (result.status === 'success') {
+                    message.innerHTML = `
+                    <button class="btn" onclick="btnClose()" id="close">X</button>
+                    <div style="height: 10rem; border-radius: .5rem; display: flex; overflow: hidden;">
+                        <img src="${result.filename}" alt="Captura de Pantalla" style="object-fit: contain; max-width: 100%; margin: auto;">
+                    </div>
+                    <div style="padding: .3rem; gap: .3rem; display: flex; flex-direction: column;">
+                        <span>¡Captura guardada!</span>
+                        <a class="btn show-image" href="${result.filename}" target="_blank">Ver imagen</a>
+                    </div>`;
+                } else {
+                    message.textContent = "Error al guardar la captura.";
+                }
+            });
+
+            document.getElementById('record-btn').addEventListener('click', async () => {
+                let duracion = prompt('¿Cuántos segundos quieres grabar? (ej: 10)', '10');
+                if (!duracion || isNaN(duracion) || duracion <= 0) {
+                    alert('Duración inválida.');
+                    return;
+                }
+                message.style = "opacity: 1;";
+                message.textContent = "Grabando video... espera a que termine.";
+                const response = await fetch(`/grabar_video?duracion=${duracion}`, { method: 'POST' });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    message.innerHTML = `
+                        <button class="btn" onclick="btnClose()" id="close">X</button>
+                        <div style="height: 10rem; border-radius: .5rem; display: flex; overflow: hidden;">
+                            <video src="${result.file}" style="object-fit: contain; max-width: 100%; margin: auto; height: 100%;" type="video/mp4" autoplay loop></video>
+                        </div>
+                        <div style="padding: .3rem; gap: .3rem; display: flex; flex-direction: column;">
+                            <span>¡Video guardado!</span>
+                            <a class="btn show-image" href="${result.file}" target="_blank">Ver video</a>
+                        </div>`;
+                } else {
+                    message.textContent = "Error al grabar el video: " + (result.detail || '');
+                }
+            });
+
+            function btnClose(){
+                message.style = "";
+                message.innerHTML = "";
+            }
+        </script>
+    </body>
+</html>
