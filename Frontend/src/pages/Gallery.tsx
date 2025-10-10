@@ -35,7 +35,7 @@ interface FilesResponse {
 
 async function fetchPhotos() {
   try {
-    const response = await axios.get<FilesResponse>(URL + 'files/');
+    const response = await axios.get<FilesResponse>(URL + '/files/');
     return response.data.archivos.map((file: Files) => ({
       id: file.id,
       nombre_fact: file.nombre_fact,

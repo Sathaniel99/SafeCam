@@ -184,7 +184,7 @@ export function Monitor() {
         )}
       </div>
       {/* Sección de visualización */}
-      <div className="border border-slate-600 bg-slate-900 rounded-md p-3 w-full grid" style={{ gridTemplateRows: 'auto 1fr auto' }}>
+      <div className="border border-slate-600 bg-slate-900 rounded-md p-3 w-full max-w-[100vh] grid" style={{ gridTemplateRows: 'auto 1fr auto' }}>
         {/* Encabezado */}
         <div className="flex flex-col sm:flex-row justify-between gap-2">
           <div className="flex flex-row items-center gap-2">

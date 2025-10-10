@@ -1,5 +1,8 @@
-const URL_main = "http://192.168.137.200"
+//IP local o del servidor backend
+const URL_main = "http://10.90.62.247"
+//Puerto donde se ejecuta el servidor backend
 const PORT_main = "5000"
+
 export const URL = `${URL_main}:${PORT_main}`;
 export const CAMERA_API = `${URL}/camaras/video_feed/`;
 
