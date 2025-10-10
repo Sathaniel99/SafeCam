@@ -6,6 +6,7 @@ import { MdOutlineInsertPhoto, MdFiberManualRecord } from "react-icons/md";
 import { IoCamera } from "react-icons/io5";
 import { HiMiniFaceFrown } from "react-icons/hi2";
 import { CgSpinnerAlt } from "react-icons/cg";
+import { MdOutlineVideocamOff } from "react-icons/md";
 // COMPONENTES
 import { useToast } from "../components/UI/ToastContext";
 import { Tooltip } from "../components/UI/Tooltip";
@@ -28,13 +29,14 @@ async function fetchCameras() {
       location: camera.location || "Ubicación desconocida",
     }));
   } catch (error) {
-    return null;
+    return "404";
   }
 }
 
 export function Monitor() {
   const { showToast } = useToast();
   const [isRecording, setIsRecording] = useState(false);
+  const [isErrorNet, setIsErrorNet] = useState(false);
   const [cameraList, setCameraList] = useState<Camera[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<Camera | null>(null);
   const [currentTime, setCurrentTime] = useState({
@@ -46,10 +48,34 @@ export function Monitor() {
   useEffect(() => {
     const loadCameras = async () => {
       setLoadingCameras(true);
-      const cameras = await fetchCameras();
-      setCameraList(cameras ?? []);
-      setLoadingCameras(false);
-      if (!cameras) showToast("No se pudo cargar la lista de cámaras.", "error");
+      setIsErrorNet(false);
+      try {
+        const cameras = await fetchCameras();
+        if (cameras == "404"){
+          showToast("No se pudo conectar al servidor.", "error");
+          setIsErrorNet(true);
+        }
+        else{
+          setCameraList(cameras ?? []);
+          if (cameras.length > 0) {
+            showToast("Cámaras cargadas correctamente", "success");
+          } else if (cameras.length === 0) {
+            showToast("No se encontraron cámaras.", "warning");
+          }
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.code === "ERR_NETWORK" || error.message.includes("Network Error")) {
+            showToast("No se pudo conectar al servidor.", "error");
+          } else {
+            showToast("Error al cargar cámaras.", "error");
+          }
+        } else {
+          showToast("Error al cargar cámaras.", "error");
+        }
+      } finally {
+        setLoadingCameras(false);
+      }
     };
     loadCameras();
   }, []);
@@ -118,7 +144,7 @@ export function Monitor() {
   };
 
   return (
-    <div className="flex flex-col-reverse lg:flex-row mt-10 gap-4 lg:h-[80dvh] max-w-[80rem] mx-auto px-4">
+    <div className="flex flex-col-reverse lg:flex-row mt-10 gap-4 lg:h-[80dvh] max-w-[80rem] mx-auto px-4 mb-5">
       {/* Sección de cámaras */}
       <div className="border border-slate-600 bg-slate-900 rounded-md p-3 w-full lg:w-[20rem] flex gap-3 overflow-x-auto lg:overflow-y-auto lg:flex-col relative">
         {/* Encabezado solo en escritorio */}
@@ -133,12 +159,11 @@ export function Monitor() {
             <CgSpinnerAlt className="animate-spin text-cyan-500" />
           </div>
         ) : cameraList.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full w-full bg-slate-500/10 p-4 text-red-500 font-bold text-center rounded-b-md">
+          <div className="flex flex-col items-center justify-center gap-3 h-full w-full bg-slate-500/10 p-4 text-red-500 font-bold text-center rounded-b-md">
             <div className="p-2 border border-slate-600 shadow shadow-slate-600/50 bg-slate-50/5 rounded-full">
-              <HiMiniFaceFrown className="text-[5rem]" />
+              { isErrorNet ? <HiMiniFaceFrown className="text-[5rem]" /> : <MdOutlineVideocamOff className="text-[5rem]" />}
             </div>
-            <span>No se encontraron cámaras.</span>
-            <span>Verifica la conexión al servidor.</span>
+            { isErrorNet ? <span>Verifica la conexión al servidor.</span> : <span>No se encontraron cámaras.</span>}
           </div>
         ) : (
           cameraList.map((camera) => (
@@ -194,19 +219,19 @@ export function Monitor() {
               <Tooltip text="Guardar una imagen de la cámara seleccionada">
                 <button
                   onClick={handleSaveImage}
-                  className="bg-green-600 hover:bg-green-700 active:bg-green-800 text-white px-4 py-2 rounded-md flex items-center gap-2 transition-all"
+                  className="bg-green-600 hover:bg-green-700 active:bg-green-800 text-white px-4 py-3 sm:py-2 rounded-md flex items-center gap-2 transition-all"
                   aria-label="Guardar captura de la cámara seleccionada"
                 >
-                  <MdOutlineInsertPhoto /> Guardar captura
+                  <MdOutlineInsertPhoto /> <span className="hidden sm:block">Guardar captura</span>
                 </button>
               </Tooltip>
               <Tooltip text={`${isRecording ? "Detiene la grabación realizada" : "Realiza una grabación con la cámara seleccionada"}`}>
                 <button
                   onClick={handleRecordVideo}
-                  className={`${isRecording ? 'bg-amber-600' : 'bg-red-600'} ${isRecording ? 'hover:bg-amber-700' : 'hover:bg-red-700'} ${isRecording ? 'active:bg-amber-800' : 'active:bg-red-800'} text-white px-4 py-2 rounded-md flex items-center gap-2 transition-all`}
+                  className={`${isRecording ? 'bg-amber-600' : 'bg-red-600'} ${isRecording ? 'hover:bg-amber-700' : 'hover:bg-red-700'} ${isRecording ? 'active:bg-amber-800' : 'active:bg-red-800'} text-white px-4 py-3 sm:py-2 rounded-md flex items-center gap-2 transition-all`}
                   aria-label={isRecording ? "Detener grabación" : "Iniciar grabación"}
                 >
-                  <MdFiberManualRecord /> {isRecording ? 'Detener grabación' : 'Grabar video'}
+                  <MdFiberManualRecord /> <span className="hidden sm:block">{isRecording ? 'Detener grabación' : 'Grabar video'}</span>
                 </button>
               </Tooltip>
             </>
@@ -214,20 +239,20 @@ export function Monitor() {
             <>
               <Tooltip text="Botón deshabilitado.">
                 <button
-                  className="bg-neutral-700 hover:bg-neutral-600 hover:cursor-not-allowed! text-white px-4 py-2 rounded-md flex items-center gap-2 transition-all"
+                  className="bg-neutral-700 hover:bg-neutral-600 hover:cursor-not-allowed! text-white px-4 py-3 sm:py-2 rounded-md flex items-center gap-2 transition-all"
                   aria-label="Guardar captura (deshabilitado)"
                   disabled
                 >
-                  <MdOutlineInsertPhoto /> Guardar captura
+                  <MdOutlineInsertPhoto /> <span className="hidden sm:block">Guardar captura</span>
                 </button>
               </Tooltip>
               <Tooltip text="Botón deshabilitado.">
                 <button
-                  className="bg-neutral-700 hover:bg-neutral-600 hover:cursor-not-allowed! text-white px-4 py-2 rounded-md flex items-center gap-2 transition-all"
+                  className="bg-neutral-700 hover:bg-neutral-600 hover:cursor-not-allowed! text-white px-4 py-3 sm:py-2 rounded-md flex items-center gap-2 transition-all"
                   aria-label="Grabar video (deshabilitado)"
                   disabled
                 >
-                  <MdFiberManualRecord /> Grabar video
+                  <MdFiberManualRecord /> <span className="hidden sm:block">Grabar video</span>
                 </button>
               </Tooltip>
             </>

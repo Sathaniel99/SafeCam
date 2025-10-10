@@ -208,7 +208,7 @@ export function Gallery() {
             </div>
             <h1 className="my-1 text-[1.75rem] font-bold">Sin datos a mostrar</h1>
             <h2 className="my-1">No se encontraron grabaciones.</h2>
-            <h3 className="my-1">
+            <h3 className="my-1 text-center">
               Comience a capturar imágenes o grabar videos en la página de{" "}
               <Link to={"/monitor"}>Monitor</Link>
             </h3>

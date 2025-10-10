@@ -18,8 +18,8 @@ export function Navbar() {
                         <div className="flex justify-center items-center p-2 border border-sky-500 bg-sky-700/15 rounded-md">
                             <GoDeviceCameraVideo size={30} className="text-sky-400" />
                         </div>
-                        <div className="hidden sm:flex flex-col h-[100%] justify-center text-white gap-1">
-                            <div className="bold text-[1.5rem] font-medium" style={{ lineHeight: 0.5 }}>SafeCam</div>
+                        <div className="hidden sm:flex flex-col h-[100%] justify-center text-white">
+                            <div className="bold text-[1.5rem] font-medium" style={{ lineHeight: 1 }}>SafeCam</div>
                             <div className="italic text-sm text-white/70">Monitoreo seguro de Cámaras</div>
                         </div>
                     </div>
