@@ -1,6 +1,6 @@
 // LIBRERIAS
 import axios from "axios";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useToast } from "../components/UI/ToastContext";
 // ICONOS
@@ -10,7 +10,7 @@ import { IoVideocamOutline } from "react-icons/io5";
 import { FaSave, FaRegTrashAlt, FaDownload } from "react-icons/fa";
 import { CgSpinnerAlt } from "react-icons/cg";
 // COMPONENTES
-import { URL_main, PORT_main } from "@/utils";
+import { URL } from "@/utils";
 import { Tooltip } from "@/components/UI/Tooltip";
 import { Modal } from "../components/UI/Modal"; // Ajusta la ruta si es necesario
 // LIGHTBOX
@@ -21,55 +21,61 @@ import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import { FaCircleInfo } from "react-icons/fa6";
 
-const URL = URL_main + ":" + PORT_main + "/";
+interface Files {
+  id: Number,
+  nombre_fact: String,
+  url: String,
+  nombre: String,
+  type: String
+}
+
+interface FilesResponse {
+  archivos: Files[];
+}
+
 async function fetchPhotos() {
   try {
-    const response = await axios.get(URL + 'files/');
-    return response.data.archivos.map((photo) => ({
-      id: photo.id,
-      nombre_fact: photo.nombre_fact,
-      url: photo.url,
-      nombre: photo.nombre,
-      type: photo.url.includes(".mp4") ? "video" : "image"
+    const response = await axios.get<FilesResponse>(URL + 'files/');
+    return response.data.archivos.map((file: Files) => ({
+      id: file.id,
+      nombre_fact: file.nombre_fact,
+      url: file.url,
+      nombre: file.nombre,
+      type: file.url.includes(".mp4") ? "video" : "image"
     }));
   } catch (error) {
     throw error;
   }
 }
 
-interface Photo {
-  id: number;
-  nombre_fact: string;
-  url: string;
-  nombre: string;
-  type: "image" | "video";
-}
-
 export function Gallery() {
   const { showToast } = useToast();
-  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [photos, setPhotos] = useState<Files[]>([]);
   const [photosFilter, setPhotosFilter] = useState("todo");
   const [index, setIndex] = useState(-1);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
-  const [fileToDelete, setFileToDelete] = useState<Photo | null>(null);
+  const [fileToDelete, setFileToDelete] = useState<Files | null>(null);
 
   useEffect(() => {
     const loadPhotos = async () => {
       setLoading(true);
       try {
         const photos = await fetchPhotos();
-        setPhotos(photos);
+        setPhotos(photos ?? []);
         if (Array.isArray(photos) && photos.length > 0) {
           showToast("Archivos cargados correctamente", "success");
         } else {
           showToast("No se encontraron datos.", "warning");
         }
       } catch (error) {
-        // Aquí capturas el error de conexión
-        if (error.code === "ERR_NETWORK" || error.message?.includes("Network Error")) {
-          showToast("No se pudo conectar al servidor.", "error");
+        if (axios.isAxiosError(error)) {
+          if (error.code === "ERR_NETWORK" || error.message.includes("Network Error")) {
+            showToast("No se pudo conectar al servidor.", "error");
+          } else {
+            showToast("Error al cargar archivos", "error");
+          }
         } else {
           showToast("Error al cargar archivos", "error");
         }
@@ -97,7 +103,7 @@ export function Gallery() {
   const [countVideos, setCountVideos] = useState(0);
 
   useEffect(() => {
-    const animateCount = (target, setter) => {
+    const animateCount = (target: number, setter: React.Dispatch<React.SetStateAction<number>>) => {
       let current = 0;
       const step = Math.ceil(target / 30);
       const interval = setInterval(() => {
@@ -115,7 +121,7 @@ export function Gallery() {
     animateCount(videos, setCountVideos);
   }, [total, imagenes, videos]);
 
-  const openLightbox = (idx) => {
+  const openLightbox = (idx: number) => {
     if (filteredPhotos.length === 0) {
       showToast("No hay archivos para mostrar", "info");
       return;
@@ -124,10 +130,10 @@ export function Gallery() {
     setIsOpen(true);
   };
 
-  const handledDelete = async (name) => {
+  const handledDelete = async (name: String) => {
     if (!window.confirm("¿Seguro que deseas eliminar este archivo?")) return;
     try {
-      const url = `${URL}files/delete/${name}`;
+      const url = `${URL}/files/delete/${name}`;
       const response = await axios.post(url);
       console.log(response.data);
       if (response.data.status === "success") {
@@ -140,11 +146,15 @@ export function Gallery() {
         return false;
       }
     } catch (error) {
-      let errorMessage = "No se pudo conectar al servidor.";
-      if (error.response && error.response.data && error.response.data.message) {
-        errorMessage = error.response.data.message;
+      if (axios.isAxiosError(error)) {
+        if (error.code === "ERR_NETWORK" || error.message.includes("Network Error")) {
+          showToast("No se pudo conectar al servidor.", "error");
+        } else {
+          showToast("Error al enviar la solicitud.", "error");
+        }
+      } else {
+        showToast("Error de conexión.", "error");
       }
-      showToast(errorMessage, "error");
       return false;
     }
   };
@@ -207,7 +217,7 @@ export function Gallery() {
           filteredPhotos.map((camera, i) => (
             <div
               className="relative h-[10rem] border border-slate-600 rounded-md overflow-hidden group"
-              key={camera.id}
+              key={i}
             >
               <div className="absolute bottom-0 start-0 z-10 flex items-center justify-between w-full">
                 <div className="p-1 rounded bg-black/80 shadow shadow-black backdrop-blur-3xl">
@@ -231,7 +241,7 @@ export function Gallery() {
                     <FaRegTrashAlt />
                   </button>
                   <a
-                    href={`${URL}${camera.url}`}
+                    href={`${URL}/${camera.url}`}
                     download={camera.nombre_fact}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -255,7 +265,7 @@ export function Gallery() {
                   >
                     <video
                       className="h-full w-auto object-contain pointer-events-none m-auto relative z-2"
-                      src={`${URL}${camera.url}`}
+                      src={`${URL}/${camera.url}`}
                       muted
                       loop
                       aria-label={`Vista previa de video ${camera.nombre_fact}`}
@@ -263,7 +273,7 @@ export function Gallery() {
                   </button>
                   <video
                     className="h-full w-full object-cover pointer-events-none m-auto absolute top-0 blur-md transform transition-transform duration-500 group-hover:scale-120 z-0"
-                    src={`${URL}${camera.url}`}
+                    src={`${URL}/${camera.url}`}
                     muted
                     loop
                     aria-label={`Fondo desenfocado de video ${camera.nombre_fact}`}
@@ -278,13 +288,13 @@ export function Gallery() {
                   >
                     <img
                       className="h-full w-auto object-contain pointer-events-none m-auto relative transform transition-transform duration-500 scale-100 group-hover:scale-110 z-2"
-                      src={`${URL}${camera.url}`}
+                      src={`${URL}/${camera.url}`}
                       alt={`Vista previa de imagen ${camera.nombre_fact}`}
                     />
                   </button>
                   <img
                     className="h-full w-full object-cover pointer-events-none m-auto absolute top-0 blur-md transform transition-transform duration-500 group-hover:scale-110 z-0"
-                    src={`${URL}${camera.url}`}
+                    src={`${URL}/${camera.url}`}
                     alt={`Fondo desenfocado de imagen ${camera.nombre_fact}`}
                   />
                 </>
@@ -297,7 +307,7 @@ export function Gallery() {
         open={isOpen}
         index={index}
         close={() => setIsOpen(false)}
-        slides={filteredPhotos.map((photo) => {
+        slides={filteredPhotos.map((photo: Files) => {
           if (photo.type === "video") {
             return {
               type: "video",
@@ -305,17 +315,17 @@ export function Gallery() {
               height: 1080,
               sources: [
                 {
-                  src: `${URL}${photo.url}`,
+                  src: `${URL}/${photo.url}`,
                   type: "video/mp4",
                 },
               ],
-              poster: `${URL}${photo.url.replace(".mp4", ".jpg")}`, // Opcional: imagen de portada para el video
+              poster: `${URL}/${photo.url.replace(".mp4", ".jpg")}`,
             };
           } else {
             return {
               type: "image",
-              src: `${URL}${photo.url}`,
-              alt: photo.nombre,
+              src: `${URL}/${photo.url}`,
+              alt: String(photo.nombre),
               width: 1920,
               height: 1080,
             };

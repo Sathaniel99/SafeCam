@@ -9,98 +9,20 @@ import { CgSpinnerAlt } from "react-icons/cg";
 // COMPONENTES
 import { useToast } from "../components/UI/ToastContext";
 import { Tooltip } from "../components/UI/Tooltip";
-import { URL_main, PORT_main } from "@/utils";
+import { URL } from "@/utils";
+import { CameraImage } from "@/components/CameraImage";
+import { CameraVideo } from "@/components/CameraVideo";
 
-const URL = `${URL_main}:${PORT_main}`
-const CAMERA_API = `${URL}/camaras/video_feed/`;
-
-const CameraVideo = ({ camId }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
-
-  const handleLoadedData = () => setIsLoading(false);
-  const handleError = () => {
-    setHasError(true);
-    setIsLoading(false);
-  };
-
-  return (
-    <div className="relative w-full h-[10rem]">
-      {(isLoading || hasError) && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black">
-          <video
-            className="w-full h-full object-cover"
-            autoPlay
-            muted
-            loop
-            playsInline
-          >
-            <source src="/noise.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-xl bg-black/50">
-            Sin señal
-          </div>
-        </div>
-      )}
-      {!hasError && (
-        <img
-          src={`${CAMERA_API}${camId}`}
-          className="w-full h-full object-contain"
-          onLoad={handleLoadedData}
-          onError={handleError}
-          alt={`Vista previa de la cámara ${camId}`}
-        />
-      )}
-    </div>
-  );
-};
-
-const CameraImage = ({ camId }) => {
-  const [hasError, setHasError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const handleError = () => {
-    setHasError(true);
-    setIsLoading(false);
-  };
-
-  const handleLoad = () => setIsLoading(false);
-
-  return (
-    <div className="relative w-full h-full">
-      {(isLoading || hasError) && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black">
-          <video
-            className="w-full h-full object-cover"
-            autoPlay
-            muted
-            loop
-            playsInline
-          >
-            <source src="/noise.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-[4rem] bg-black/50 drop-shadow-2xl inset-ring-slate-950">
-            Sin señal
-          </div>
-        </div>
-      )}
-      {!hasError && camId !== null && (
-        <img
-          className="w-full h-full object-contain"
-          src={`${CAMERA_API}${camId}`}
-          alt={`Imagen en vivo de la cámara ${camId}`}
-          onLoad={handleLoad}
-          onError={handleError}
-        />
-      )}
-    </div>
-  );
-};
+interface Camera {
+  id: number,
+  name: String,
+  location: String,
+}
 
 async function fetchCameras() {
   try {
-    const response = await axios.get(`${URL}/camaras/`);
-    return response.data.map((camera, index) => ({
+    const response = await axios.get<Camera[]>(`${URL}/camaras/`);
+    return response.data.map((camera: Camera) => ({
       id: camera.id,
       name: camera.name || `Cámara ${camera.id}`,
       location: camera.location || "Ubicación desconocida",
@@ -113,8 +35,8 @@ async function fetchCameras() {
 export function Monitor() {
   const { showToast } = useToast();
   const [isRecording, setIsRecording] = useState(false);
-  const [cameraList, setCameraList] = useState(null);
-  const [selectedCamera, setSelectedCamera] = useState(null);
+  const [cameraList, setCameraList] = useState<Camera[]>([]);
+  const [selectedCamera, setSelectedCamera] = useState<Camera | null>(null);
   const [currentTime, setCurrentTime] = useState({
     fecha: "",
     hora: "",
@@ -125,12 +47,13 @@ export function Monitor() {
     const loadCameras = async () => {
       setLoadingCameras(true);
       const cameras = await fetchCameras();
-      setCameraList(cameras);
+      setCameraList(cameras ?? []);
       setLoadingCameras(false);
       if (!cameras) showToast("No se pudo cargar la lista de cámaras.", "error");
     };
     loadCameras();
   }, []);
+
 
   useEffect(() => {
     const updateTime = () => {
@@ -144,7 +67,7 @@ export function Monitor() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleCameraClick = (camera) => {
+  const handleCameraClick = (camera: Camera) => {
     setSelectedCamera(camera);
     showToast(`Cámara seleccionada:\n ${camera.name}`, "info");
   };
@@ -209,7 +132,7 @@ export function Monitor() {
             <span>Cargando cámaras...</span>
             <CgSpinnerAlt className="animate-spin text-cyan-500" />
           </div>
-        ) : cameraList === null ? (
+        ) : cameraList.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full w-full bg-slate-500/10 p-4 text-red-500 font-bold text-center rounded-b-md">
             <div className="p-2 border border-slate-600 shadow shadow-slate-600/50 bg-slate-50/5 rounded-full">
               <HiMiniFaceFrown className="text-[5rem]" />

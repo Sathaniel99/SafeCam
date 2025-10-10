@@ -1,5 +1,6 @@
 // LIBRERIAS
-import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import type { ReactNode } from "react";
 // ICONOS
 import { FaCircleInfo } from "react-icons/fa6";
 import { FaCheckCircle } from "react-icons/fa";
@@ -12,7 +13,6 @@ type ToastContextType = {
   showToast: (message: string, type?: "success" | "error" | "warning" | "info") => void;
 };
 
-const TOAST_DURATION = 3000; // ms
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 

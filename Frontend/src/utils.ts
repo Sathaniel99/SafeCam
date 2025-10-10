@@ -1,5 +1,7 @@
-export const URL_main = "http://192.168.137.200"
-export const PORT_main = "5000"
+const URL_main = "http://192.168.137.200"
+const PORT_main = "5000"
+export const URL = `${URL_main}:${PORT_main}`;
+export const CAMERA_API = `${URL}/camaras/video_feed/`;
 
 //Calcula el tiempo estimado de lectura de un texto en milisegundos.
 //@param text -> El texto a leer.
