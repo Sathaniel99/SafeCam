@@ -2,11 +2,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 // ICONOS
-import { FaCircleInfo } from "react-icons/fa6";
-import { FaCheckCircle } from "react-icons/fa";
-import { MdOutlineWarning, MdCancel } from "react-icons/md";
+import { MdCancel } from "react-icons/md";
 // COMPONENTES
 import { estimateReadingTimeMs } from "@/utils";
+import { getColor, getIcon, getProgressColor } from "./AlertsUtils";
 
 type Toast = { id: number; message: string; type?: "success" | "error" | "warning" | "info"; createdAt: number };
 type ToastContextType = {
@@ -20,34 +19,6 @@ export function useToast() {
   const ctx = useContext(ToastContext);
   if (!ctx) throw new Error("'useToast' debe ser usado dentro de ToastProvider");
   return ctx;
-}
-
-function getIcon(type: string = "info") {
-  switch (type) {
-    case "success":
-      return <FaCheckCircle className="text-green-500" />;
-    case "error":
-      return <MdCancel className="text-red-500" />;
-    case "warning":
-      return <MdOutlineWarning className="text-yellow-300 fw-bold" />;
-    case "info":
-    default:
-      return <FaCircleInfo className="text-cyan-500" />;
-  }
-}
-
-function getProgressColor(type: string = "info") {
-  switch (type) {
-    case "success":
-      return "bg-green-500";
-    case "error":
-      return "bg-red-700";
-    case "warning":
-      return "bg-yellow-400";
-    case "info":
-    default:
-      return "bg-cyan-500";
-  }
 }
 
 export function ToastProvider({ children }: { children: ReactNode }) {
@@ -116,15 +87,14 @@ function ToastItem({
   return (
     <div
       className={`
-        p-4 pt-5 rounded-lg shadow-2xl flex items-center gap-2 animate-fade-in-up min-w-[220px] relative
+        p-4 pt-5 rounded-lg shadow-2xl flex items-center gap-2 animate-fade-in-up min-w-[220px] relative text-white from-black
         ${toast.type === "success"
-          ? "from-black to-green-500 bg-gradient-to-r text-white"
+          ? `to-${getColor(toast.type)}-500`
           : toast.type === "error"
-          ? "from-black to-red-700 bg-gradient-to-r text-white"
+          ? `to-${getColor(toast.type)}-700`
           : toast.type === "warning"
-          ? "from-black to-yellow-600 bg-gradient-to-r text-white"
-          : "from-black to-cyan-500 bg-gradient-to-r text-white"}
-      `}
+          ? `to-${getColor(toast.type)}-600`
+          : `to-${getColor(toast.type)}-600`} bg-gradient-to-r`}
     >
       <button
         className="absolute top-1 right-1 text-lg rounded-2xl border border-white bg-red-400 hover:bg-white hover:text-red-400 transition-colors"

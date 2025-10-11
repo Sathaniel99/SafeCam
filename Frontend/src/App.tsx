@@ -6,7 +6,7 @@ import { Gallery } from "./pages/Gallery";
 import NotFound from "./components/UI/404";
 // COMPONENTES
 import { Navbar } from "./components/UI/Navbar";
-import { ToastProvider } from "./components/UI/ToastContext";
+import { ToastProvider } from "./components/UI/AlertsContext";
 
 function App() {
   return (

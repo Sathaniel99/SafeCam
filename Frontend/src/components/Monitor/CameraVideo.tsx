@@ -1,23 +1,22 @@
+// LIBRERIAS
 import { useState } from "react";
+// COMPONENTES
 import { CAMERA_API } from "@/utils";
 
-interface CameraImageProps {
+interface CameraVideoProps {
   camId: number;
 }
 
-export const CameraImage = ({ camId }: CameraImageProps) => {
-  const [hasError, setHasError] = useState(false);
+export const CameraVideo = ({ camId }: CameraVideoProps) => {
   const [isLoading, setIsLoading] = useState(true);
-
+  const [hasError, setHasError] = useState(false);
+  const handleLoadedData = () => setIsLoading(false);
   const handleError = () => {
     setHasError(true);
     setIsLoading(false);
   };
-
-  const handleLoad = () => setIsLoading(false);
-
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-[10rem]">
       {(isLoading || hasError) && (
         <div className="absolute inset-0 flex items-center justify-center bg-black">
           <video
@@ -29,18 +28,18 @@ export const CameraImage = ({ camId }: CameraImageProps) => {
           >
             <source src="/noise.mp4" type="video/mp4" />
           </video>
-          <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-[4rem] bg-black/50 drop-shadow-2xl inset-ring-slate-950">
+          <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-xl bg-black/50">
             Sin señal
           </div>
         </div>
       )}
-      {!hasError && camId !== null && (
+      {!hasError && (
         <img
-          className="w-full h-full object-contain"
           src={`${CAMERA_API}${camId}`}
-          alt={`Imagen en vivo de la cámara ${camId}`}
-          onLoad={handleLoad}
+          className="w-full h-full object-contain"
+          onLoad={handleLoadedData}
           onError={handleError}
+          alt={`Vista previa de la cámara ${camId}`}
         />
       )}
     </div>
