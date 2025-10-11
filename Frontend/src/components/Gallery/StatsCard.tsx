@@ -1,22 +1,21 @@
-// LIBRERIAS
-import type { ReactNode } from "react";
-import type { IconType } from "react-icons";
-
-export type ColorType = "amber" | "green" | "cyan" | "blue" | "red" | "yellow";
+import type { ColorType } from "@/interfaces";
+import type { ElementType, ReactNode } from "react";
 
 interface StatsCardProps {
   title: ReactNode;
   value: number;
-  icon: IconType;
+  icon: ElementType;
   color: ColorType;
 }
 
-// Mapeo de colores a clases de Tailwind CSS
-const colorClasses: Record<ColorType, {
-  text: string;
-  textLarge: string;
-  container: string;
-}> = {
+const colorClasses: Record<
+  ColorType,
+  {
+    text: string;
+    textLarge: string;
+    container: string;
+  }
+> = {
   amber: {
     text: "text-amber-500",
     textLarge: "text-amber-800/25",
@@ -49,12 +48,14 @@ const colorClasses: Record<ColorType, {
   },
 };
 
-
-export const StatsCard = ({ title, value, icon: Icon, color }: StatsCardProps) => {
-  // Obtiene las clases correspondientes al color
+export const StatsCard = ({
+  title,
+  value,
+  icon: Icon,
+  color,
+}: StatsCardProps) => {
   const { text, textLarge, container } = colorClasses[color];
 
-  // Clases para el contenedor
   const containerClasses = `
     border border-slate-600
     flex flex-col justify-between
@@ -64,21 +65,18 @@ export const StatsCard = ({ title, value, icon: Icon, color }: StatsCardProps) =
     text-center sm:text-start relative
   `;
 
-  // Clases para el título
   const titleClasses = `
     font-normal text-white/70
     text-sm sm:text-base
     flex items-center gap-2
   `;
 
-  // Clases para el ícono pequeño
   const smallIconClasses = `
     hidden md:block
     text-[1.5rem]
     ${text}
   `;
 
-  // Clases para el valor
   const valueClasses = `
     ${text}
     font-bold
@@ -86,7 +84,6 @@ export const StatsCard = ({ title, value, icon: Icon, color }: StatsCardProps) =
     text-start
   `;
 
-  // Clases para el ícono grande
   const largeIconClasses = `
     sm:hidden
     absolute bottom-0 end-0
