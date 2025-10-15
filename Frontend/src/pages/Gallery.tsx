@@ -3,13 +3,7 @@ import { FaSave } from "react-icons/fa";
 import { usePhotos } from "@/hooks/usePhotos";
 import { useToast } from "@/components/UI/AlertsContext";
 import type { Files } from "@/interfaces";
-import {
-  GalleryDeleteModal,
-  GalleryFilters,
-  GalleryGrid,
-  GalleryLightbox,
-  GalleryStats,
-} from "@/components/Gallery";
+import { GalleryDeleteModal, GalleryFilters, GalleryGrid, GalleryLightbox, GalleryStats } from "@/components/Gallery";
 import { deleteFile } from "@/api/delete-file";
 
 export function Gallery() {
@@ -24,8 +18,8 @@ export function Gallery() {
     photosFilter === "todo"
       ? true
       : photosFilter === "imagenes"
-      ? p.type === "image"
-      : p.type === "video"
+        ? p.type === "image"
+        : p.type === "video"
   );
 
   const handleDelete = async (name: string) => {

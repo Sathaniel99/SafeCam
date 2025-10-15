@@ -18,7 +18,7 @@ export const GalleryGrid = ({
   onDelete,
   openLightbox,
 }: Props) => {
-  if (loading) return <LoadingFiles type="archivos" />;
+  if (loading) return <div className="flex flex-col items-center justify-center min-h-96 border border-slate-600 bg-slate-900 rounded-md"><LoadingFiles type="archivos" /></div> ;
 
   if (filteredPhotos.length === 0)
     return (

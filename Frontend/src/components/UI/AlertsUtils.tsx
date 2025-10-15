@@ -34,13 +34,13 @@ export function getIcon(type: string = "info") {
 export function getProgressColor(type: string = "info") {
     switch (type) {
         case "success":
-            return `bg-${getColor(type)}-500`;
+            return `bg-green-500`;
         case "error":
-            return `bg-${getColor(type)}-700`;
+            return `bg-red-600`;
         case "warning":
-            return `bg-${getColor(type)}-400`;
+            return `bg-amber-400`;
         case "info":
         default:
-            return `bg-${getColor(type)}-800`;
+            return `bg-blue-400`;
     }
 }

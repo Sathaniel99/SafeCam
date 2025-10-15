@@ -25,7 +25,7 @@ export const usePhotos = () => {
         showToast("No se encontraron datos.", "warning");
       }
     } catch {
-      showToast("Error al cargar las fotos.", "error");
+      showToast("Error al cargar los archivos.", "success");
     } finally {
       setLoading(false);
     }

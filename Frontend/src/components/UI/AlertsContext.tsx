@@ -86,16 +86,9 @@ function ToastItem({
 
   return (
     <div
-      className={`
-        p-4 pt-5 rounded-lg shadow-2xl flex items-center gap-2 animate-fade-in-up min-w-[220px] relative text-white from-black
-        ${toast.type === "success"
-          ? `to-${getColor(toast.type)}-500`
-          : toast.type === "error"
-          ? `to-${getColor(toast.type)}-700`
-          : toast.type === "warning"
-          ? `to-${getColor(toast.type)}-600`
-          : `to-${getColor(toast.type)}-600`} bg-gradient-to-r`}
-    >
+      className={` p-4 pt-5 rounded-lg shadow-2xl flex items-center gap-2 animate-fade-in-up min-w-[220px] relative text-white from-black ${toast.type === "success" ?
+        ` to-green-500` : toast.type === "error" ? ` to-red-700` : toast.type === "warning" ?
+        ` to-amber-600` : ` to-blue-600`} bg-gradient-to-r`}>
       <button
         className="absolute top-1 right-1 text-lg rounded-2xl border border-white bg-red-400 hover:bg-white hover:text-red-400 transition-colors"
         onClick={onClose}
