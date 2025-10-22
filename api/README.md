@@ -25,12 +25,18 @@ pip install -r requirements_fastapi.txt
 ## Uso
 
 1. Ejecuta el servidor:
-
+- Navega hasta la carpeta principal donde se encuentra el main.py y ejecuta el siguiente comando:
 ```bash
-uvicorn main_fastapi:app --reload
+python start.py
 ```
+- O de lo contrario ejecuta el siguiente comando
+```bash
+uvicorn main_fastapi:app --reload --host 0.0.0.0 --port 5000
+```
+En el archivo start.py esta la configuración del script de python, ahi puedes configurarlo para no escribirlo completo cada vez que se necesite iniciar, solo llama a start.py y carga toda la configuración.
 
-2. Abre tu navegador en [http://localhost:8000](http://localhost:8000)
+
+2. Abre tu navegador en [http://localhost:5000](http://localhost:5000)
 
 ## Endpoints principales
 - `/` : Página principal con el visor de la webcam.
