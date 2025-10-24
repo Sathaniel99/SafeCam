@@ -95,28 +95,20 @@ def detener_grabacion(cam_id: int):
     return {"status": "success", "message": "Grabación detenida."}
 
 def gen_frames(cam_id: int):
-    import numpy as np
-    prev_frame = None
     try:
         while True:
             frame = FRAME_BUFFERS.get(cam_id)
             if frame is None:
                 time.sleep(0.05)
                 continue
-            frame = cv2.flip(frame, 1)
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            faces = face_cascade.detectMultiScale(gray, 1.1, 4)
-            for (x, y, w, h) in faces:
-                cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
-            if prev_frame is not None:
-                diff = cv2.absdiff(prev_frame, gray)
-                _, thresh = cv2.threshold(diff, 25, 255, cv2.THRESH_BINARY)
-                if np.sum(thresh) > 1000:
-                    now = datetime.now().strftime("%d/%m/%Y %I:%M:%S %p")
-                    cv2.putText(frame, f"{now}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 4)
-                    cv2.putText(frame, f"{now}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-            prev_frame = gray
-            ret, buffer = cv2.imencode('.jpg', frame)
+
+            
+
+            # Codifica directamente a JPEG
+            ret, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
+            if not ret:
+                continue
+
             frame_bytes = buffer.tobytes()
             yield (b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
     except GeneratorExit:
