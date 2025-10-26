@@ -1,24 +1,22 @@
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from routers import cameras, files
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from routers import cameras, files
 import config
 
-app = FastAPI(debug=config.DEBUG)  # Usa la variable DEBUG de config.py
+app = FastAPI()
 
-# Usa la variable ALLOWED_ORIGINS de config.py para CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=config.ALLOWED_ORIGINS,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Usa las variables de directorios de config.py para las rutas estáticas
-app.mount("/static", StaticFiles(directory=config.STATIC_DIR), name="static")
-app.mount("/screenshots", StaticFiles(directory=config.SCREENSHOTS_DIR), name="screenshots")
-
+app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/screenshots", StaticFiles(directory="screenshots"), name="screenshots")
+app.mount("/medias", StaticFiles(directory="screenshots"), name="medias")
 
 app.include_router(cameras.router)
 app.include_router(files.router)

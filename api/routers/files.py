@@ -1,5 +1,5 @@
-from services.file_service import *
 from fastapi import APIRouter
+from services.file_service import listar_files, obtener_file
 
 router = APIRouter(prefix="/files", tags=["Files"])
 
@@ -10,7 +10,3 @@ def get_files():
 @router.get("/{filename}")
 def get_file(filename: str):
     return obtener_file(filename)
-
-@router.post("/delete/{filename}")
-def get_file(filename: str):
-    return eliminar_file(filename)

@@ -1,7 +1,7 @@
+import os
 from fastapi.responses import FileResponse
 from fastapi import HTTPException
-from utils.helpers import *
-import os
+from utils.helpers import convertir_fecha
 
 SAVE_DIR = 'screenshots'
 
@@ -34,11 +34,3 @@ def obtener_file(filename: str):
     if not os.path.exists(filepath):
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
     return FileResponse(filepath)
-
-def eliminar_file(filename: str):
-    ruta_completa = os.path.join(SAVE_DIR, filename)
-    if os.path.exists(ruta_completa):
-        os.remove(ruta_completa)
-        return {"status": "success"}
-    else:
-        raise HTTPException(status_code=404, detail="Archivo no encontrado")

@@ -31,6 +31,7 @@ def detectar_camaras(max_cams=10):
 CAM_INFOS = detectar_camaras(10)
 CAMERAS = {cam["id"]: cv2.VideoCapture(cam["id"]) for cam in CAM_INFOS}
 FRAME_BUFFERS = {}
+active_recordings = {}
 
 def camera_stream_worker(cam_id):
     cam = CAMERAS[cam_id]
@@ -44,8 +45,6 @@ def camera_stream_worker(cam_id):
 for cam_id in CAMERAS:
     t = threading.Thread(target=camera_stream_worker, args=(cam_id,), daemon=True)
     t.start()
-
-active_recordings = {}
 
 def record_video(cam_id: int, duration: int = 60):
     cam = CAMERAS.get(cam_id)

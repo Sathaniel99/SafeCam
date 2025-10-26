@@ -1,5 +1,5 @@
 //IP local o del servidor backend
-const URL_main = "http://127.0.0.1"
+const URL_main = "http://192.168.67.103"
 //Puerto donde se ejecuta el servidor backend
 const PORT_main = "5000"
 

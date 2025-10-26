@@ -1,0 +1,6 @@
+Instalar cada paquete de forma individual:
+pip install nombre_del_archivo.whl
+
+Instalar todos los paquetes de la carpeta de una sola vez:
+pip install *.whl
+

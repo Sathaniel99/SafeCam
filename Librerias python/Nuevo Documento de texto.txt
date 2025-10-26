@@ -1,0 +1,7 @@
+5. Procesamiento de Lenguaje Natural (NLP)
+NLTK:
+Librería clásica para NLP.
+spaCy:
+Procesamiento de lenguaje natural moderno y eficiente.
+Transformers (Hugging Face):
+Para modelos avanzados de NLP como BERT, GPT, etc.
